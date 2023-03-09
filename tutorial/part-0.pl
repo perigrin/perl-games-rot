@@ -9,18 +9,22 @@ class Engine {
     my $WIDTH = 800;
     my $HEIGHT = 500;
 
-    field $display = Games::ROT->new(
+    field $app = Games::ROT->new(
         width  => $WIDTH,
         height => $HEIGHT,
     );
+
+    ADJUST {
+        $app->add_show_handler( sub { $self->render() } );
+        $app->run();
+    }
 
     method render() {
         my $x = $WIDTH / 2;
         my $y = $HEIGHT / 2;
 
-        $display->draw($x, $y, 'Hello World', '#fff', '#000');
+        $app->draw($x, $y, 'Hello World', '#fff', '#000');
     }
 }
 
 my $engine = Engine->new();
-$engine->render();
