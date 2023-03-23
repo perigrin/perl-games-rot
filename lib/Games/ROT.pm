@@ -7,6 +7,20 @@ use SDL;
 use SDL::Event;
 use SDLx::App;
 
+package Games::ROT::Color {
+    sub css_to_hex ($css) {
+        my %map = (
+            '#fff'    => 0xFFFFFFFF,
+            '#000'    => 0x000000FF,
+            '#323296' => 0x323296FF,
+            '#000064' => 0x000064FF,
+            '#ffff00' => 0xFFFF00FF,
+        );
+        return $map{$css};
+    }
+}
+
+
 class Games::ROT::Event {
     field $event :param;
     field $controller :param;
@@ -25,25 +39,29 @@ class Games::ROT::Event {
 
 class Games::ROT {
 	field $title :param = 'My Game';
-	field $height :param;
-	field $width :param;
+	field $screen_height :param //= 80;
+	field $screen_width  :param //= 50;
+    field $tile_height   :param //= 10;
+    field $tile_width    :param //= 10;
 	field $depth :param = 32;
 
-	field $app;
+    field $app;
+    # TODO this _should_ be a default assignment, but that doesn't work pre 5.38.0
+    ADJUST {
+        $app = SDLx::App->new(
+            title        => $title,
+            height       => $screen_height * $tile_height,
+            width        => $screen_width * $tile_width,
+            depth        => $depth,
+            exit_on_quit => 1,
+        );
+    }
+
     field %event_handlers = {
         quit => sub($e) { $e->controller->stop() },
     };
 
-
     ADJUST {
-        $app = SDLx::App->new(
-            title        => $title,
-            height       => $height,
-            width        => $width,
-            depth        => $depth,
-            exit_on_quit => 1,
-        );
-
         $app->add_event_handler(sub ( $event, $controller ) {
             my $e = Games::ROT::Event->new( event => $event, controller => $controller );
             if (my $handler = $event_handlers{ $e->type } ) {
@@ -57,10 +75,17 @@ class Games::ROT {
     }
 
 	method draw($x, $y, $text, $fg, $bg) {
-		#TODO figure out colors
-		$app->draw_gfx_text([$x, $y], [255, 255, 255, 255], $text);
-		$app->update();
+        my $fgc = Games::ROT::Color::css_to_hex($fg);
+        my $bgc = Games::ROT::Color::css_to_hex($bg);
+        $x *= $tile_width;
+        $y *= $tile_height;
+        $app->draw_rect([$x, $y, $tile_width, $tile_height], $bgc);
+		$app->draw_gfx_text([$x, $y], $fgc, $text);
 	}
+
+    method update() {
+		$app->update();
+    }
 
     method add_move_handler($handler) {
         $app->add_move_handler(
@@ -81,6 +106,8 @@ class Games::ROT {
         $event_handlers{$type} = $handler;
     }
 
-    method run { $app->run() }
+    method run() { $app->run() }
+
+    method display() { $self }
 }
 

@@ -18,24 +18,24 @@ class MovementAction {
 
 sub handle_input($event) {
     my %MOVE_KEYS = (
-        up    => MovementAction->new( dy => -10 ),
-        down  => MovementAction->new( dy => 10 ),
-        left  => MovementAction->new( dx => -10 ),
-        right => MovementAction->new( dx => 10 ),
+        up    => MovementAction->new( dy => -1 ),
+        down  => MovementAction->new( dy => 1 ),
+        left  => MovementAction->new( dx => -1 ),
+        right => MovementAction->new( dx => 1 ),
     );
     return $MOVE_KEYS{$event->key};
 }
 
 class Engine {
-    my $WIDTH = 800;
-    my $HEIGHT = 500;
+    my $WIDTH = 80;
+    my $HEIGHT = 50;
 
     field $playerX = $WIDTH / 2;
     field $playerY = $WIDTH / 2;
 
     field $app = Games::ROT->new(
-        width  => $WIDTH,
-        height => $HEIGHT,
+        screen_width  => $WIDTH,
+        screen_height => $HEIGHT,
     );
 
     ADJUST {

@@ -6,12 +6,12 @@ use Feature::Compat::Class; # or 5.38.0 + feature "class"
 use Games::ROT;
 
 class Engine {
-    my $WIDTH = 800;
-    my $HEIGHT = 500;
+    my $WIDTH = 80;
+    my $HEIGHT = 50;
 
     field $app = Games::ROT->new(
-        width  => $WIDTH,
-        height => $HEIGHT,
+        screen_width  => $WIDTH,
+        screen_height => $HEIGHT,
     );
 
     ADJUST {
