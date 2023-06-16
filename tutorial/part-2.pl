@@ -1,12 +1,14 @@
 #!/usr/bin/env perl
-use 5.34.0;
-use feature 'signatures';
-no warnings 'experimental::signatures';
+use 5.38.0;
 
-use Feature::Compat::Class;
 use lib qw(lib);
+use experimental 'class';
 
 use Games::ROT;
+
+class QuitAction {
+    method perform($engine, $) { $engine->exit }
+}
 
 class MovementAction {
     field $dx :param //= 0;
@@ -25,16 +27,6 @@ class MovementAction {
 
         $entity->move($dx, $dy);
     }
-}
-
-sub handle_input($event) {
-    my %MOVE_KEYS = (
-        up    => MovementAction->new( dy => -1 ),
-        down  => MovementAction->new( dy =>  1 ),
-        left  => MovementAction->new( dx => -1 ),
-        right => MovementAction->new( dx =>  1 ),
-    );
-    return $MOVE_KEYS{$event->key};
 }
 
 class Entity {
@@ -100,6 +92,7 @@ class GameMap {
     field @tiles = ([]);
 
     ADJUST {
+        # initialize the map
         for my $y (0..$height) {
             my @row = ();
             for my $x (0..$width) {
@@ -125,7 +118,6 @@ class GameMap {
                 $display->draw($x, $y, $tile->char, $tile->fg, $tile->bg);
             }
         }
-        $display->update();
     }
 
     method tile_at($x, $y) {
@@ -144,14 +136,12 @@ class Engine {
         screen_height => $HEIGHT,
     );
 
-    field $game_map;
-    ADJUST { # pre-5.38.0 we can't init fields from fields
-        $game_map = GameMap->new(
-            width   => $MAP_WIDTH,
-            height  => $MAP_HEIGHT,
-            display => $app->display(),
-        );
-    }
+    field $game_map = GameMap->new(
+        width   => $MAP_WIDTH,
+        height  => $MAP_HEIGHT,
+        display => $app->display(),
+    );
+
     method game_map { $game_map }
 
     field $player :param;
@@ -161,14 +151,24 @@ class Engine {
         $app->add_event_handler(
             'keydown' => sub ($event) { $self->listen($event) }
         );
-        $app->add_show_handler( sub { $self->render() } );
-        $app->run();
+        $app->run( sub { $self->render() } );
+    }
+
+    my sub handle_input($event) {
+        my %MOVE_KEYS = (
+            h => MovementAction->new( dx => -1 ),
+            j => MovementAction->new( dy => 1 ),
+            k => MovementAction->new( dy => -1 ),
+            l => MovementAction->new( dx => 1 ),
+            q => QuitAction->new(),
+        );
+        return $MOVE_KEYS{$event->key};
     }
 
     method listen($event) {
         $app->clear();
 
-        if (my $action = main::handle_input($event)) {
+        if (my $action = handle_input($event)) {
             $action->perform($self, $player);
         }
     }

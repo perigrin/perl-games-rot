@@ -1,7 +1,8 @@
 #!/usr/bin/env perl
-use strict;
+use 5.38.0;
+
 use lib qw(lib);
-use Feature::Compat::Class; # or 5.38.0 + feature "class"
+use experimental  'class';
 
 use Games::ROT;
 
@@ -15,8 +16,7 @@ class Engine {
     );
 
     ADJUST {
-        $app->add_show_handler( sub { $self->render() } );
-        $app->run();
+        $app->run( sub { $self->render() } );
     }
 
     method render() {

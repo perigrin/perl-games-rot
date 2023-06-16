@@ -1,2 +1,3 @@
 requires 'Feature::Compat::Class';
-requires 'SDL';
+requires 'Term::Screen';
+requires 'Term::ANSIColor';
