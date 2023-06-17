@@ -44,7 +44,7 @@ class Games::ROT {
     ADJUST {
         $term->rows($screen_height);
         $term->cols($screen_width);
-        $term->echo(0);
+        $term->noecho();
         $term->curinvis();
         $term->clrscr();
     }
@@ -81,7 +81,8 @@ class Games::ROT {
     }
 
     method display { $self }
-    method quit() { exit }
+
+    method DESTROY { exec('stty sane') }
 }
 
 1;
