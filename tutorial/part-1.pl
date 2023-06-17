@@ -20,8 +20,8 @@ class Engine {
     my $WIDTH = 80;
     my $HEIGHT = 50;
 
-    field $playerX = $WIDTH / 2;
-    field $playerY = $WIDTH / 2;
+    field $player_x = $WIDTH / 2;
+    field $player_y = $WIDTH / 2;
 
     field $app = Games::ROT->new(
         screen_width  => $WIDTH,
@@ -30,38 +30,24 @@ class Engine {
 
     ADJUST {
         $app->add_event_handler(
-            'keydown' => sub ($event) { $self->listen($event) }
+            'keydown' => sub ($event) {
+                my %KEY_MAP = (
+                    h => sub { $player_x -= 1 },
+                    j => sub { $player_y += 1 },
+                    k => sub { $player_y -= 1 },
+                    l => sub { $player_x += 1 },
+                    q => sub { exit }
+                );
+                # lets execute the action now
+                $KEY_MAP{$event->key}->();
+            }
         );
         $app->run( sub { $self->render() } );
     }
 
-    my sub handle_input($event) {
-        my %MOVE_KEYS = (
-            h => MovementAction->new( dx => -1 ),
-            j => MovementAction->new( dy => 1 ),
-            k => MovementAction->new( dy => -1 ),
-            l => MovementAction->new( dx => 1 ),
-            q => QuitAction->new(),
-        );
-        return $MOVE_KEYS{$event->key};
-    }
-
-    method listen($event) {
-        my $action = handle_input($event);
-
-        if ($action isa 'QuitAction') {
-            $app->quit;
-        }
-
-        if ($action isa 'MovementAction') {
-            $playerX += $action->dx;
-            $playerY += $action->dy;
-        }
-    }
-
     method render() {
         $app->clear();
-        $app->draw($playerX, $playerY, '@', '#fff', '#000');
+        $app->draw($player_x, $player_y, '@', '#fff', '#000');
     }
 }
 
