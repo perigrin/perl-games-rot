@@ -1,4 +1,5 @@
 use strict;
+use warnings;
 use feature 'signatures';
 no warnings 'experimental::signatures';
 
@@ -7,11 +8,11 @@ use Term::Screen;
 use Term::ANSIColor;
 
 package Games::ROT::Color {
-	my sub htoi($hex) { unpack('l', pack( 'L', hex($hex))); }
+	my sub htoi($hex) { unpack('l', pack( 'L', hex($hex))) }
 
     sub css_to_ansi ($css) {
 		if (length($css) == 4) {
-			my ($h, $r, $g, $b) = map { htoi("$_"x2) } split //, $css;
+			my ($h, $r, $g, $b) = map { htoi("$_"x2) if !m/#/  } split //, $css;
 			return "r${r}g${g}b${b}";
 		}
 		if (length($css) == 7) {
@@ -49,7 +50,7 @@ class Games::ROT {
         $term->clrscr();
     }
 
-    field %event_handlers = {};
+    field %event_handlers = ();
 
     ADJUST { }
 
