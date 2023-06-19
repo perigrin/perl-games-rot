@@ -41,7 +41,7 @@ class Games::ROT {
     field $depth :param = 32;
 
     field $term = Term::Screen->new();
-    # TODO this _should_ be a default assignment, but that doesn't work pre 5.38.0
+
     ADJUST {
         $term->rows($screen_height);
         $term->cols($screen_width);
