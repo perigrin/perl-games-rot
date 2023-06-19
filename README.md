@@ -1,6 +1,6 @@
 # Games::ROT
 
-A Perl port of ROT.js the ROuglelike Toolkit for JavaScript/TypeScript.
+A Perl library inspired by [ROT.js](https://ondras.github.io/rot.js/hp/) the ROuglelike Toolkit for JavaScript/TypeScript.
 
 ## Synopsis
 
