@@ -6,6 +6,7 @@ no warnings 'experimental::signatures';
 use Feature::Compat::Class;
 use Term::Screen;
 use Term::ANSIColor;
+use Games::ROT::FOV;
 
 package Games::ROT::Color {
     my sub htoi($hex) { unpack('l', pack( 'L', hex($hex))) }
