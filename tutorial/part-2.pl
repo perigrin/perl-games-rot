@@ -9,13 +9,11 @@ use Games::ROT;
 
 class Tile {
     field $walkable :param;
-    field $transparent :param;
     field $char :param //= '';
     field $fg :param //= '#fff';
     field $bg :param //= '#000';
 
     method is_walkable() { $walkable }
-    method is_transparent { $transparent }
     method char() { $char }
     method fg() { $fg }
     method bg() { $bg }
@@ -34,7 +32,6 @@ class GameMap {
     my sub FLOOR_TILE() {
         Tile->new(
             walkable    => 1,
-            transparent => 1,
             char        => '.',
             fg          => '#333'
         );
@@ -43,7 +40,6 @@ class GameMap {
     my sub WALL_TILE() {
         Tile->new(
             walkable    => 0,
-            transparent => 0,
             char        => '#',
         );
     }
